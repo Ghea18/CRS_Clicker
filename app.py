@@ -33,6 +33,7 @@ login_manager.login_message_category = "warning"
 # Prepare Global Variable
 data_response = [{"A": 0, "B": 0, "C": 0, "D": 0, "E": 0}]
 responden = []
+response_done = False
 
 class User(UserMixin):
   def __init__(self,id):
@@ -48,9 +49,15 @@ def index():
 @app.route("/answer")
 @login_required
 def answer():
-    session['time'] = {'m':0, 's':10}
-    # Display Main Page
+    # Display Instrument Page
     return render_template("answer.html", data_response=session['data_response'], username=session['user_name'], number=session['number'], session_code=session['session_code'])
+
+# Route to response
+@app.route("/result")
+@login_required
+def result():
+    # Display Instrument Page
+    return render_template("result.html", username=session['user_name'], session_code=session['session_code'])
 
 # Route for reset
 @app.route('/reset', methods=["POST", "GET"])
@@ -85,7 +92,10 @@ def login():
         responden.append(user)
         # Welcome user and redirected to book page
         sys.stdout.flush()
-        return redirect(url_for('answer'))
+        if user == 'admin':
+            return redirect(url_for('result'))
+        else:
+            return redirect(url_for('answer'))
 
 # ROute for logout
 @app.route('/logout', methods=["POST", "GET"])
@@ -117,10 +127,10 @@ def response(data):
     if number not in lib:
         data_response[number-1][selection] += 1
         session['number_cek'].append(session['number'])
-
+    emit("response number", f"{session['number']} (done)")
     # Emits data_response to display to client
-    emit("response people", responden, broadcast=True)
-    emit("response totals", data_response, broadcast=True)
+    emit("response admin_people", responden, broadcast=True)
+    emit("response admin_totals", data_response, broadcast=True)
 
 # Route to next
 @socketio.on("next response")
@@ -143,6 +153,24 @@ def back():
     print(session['number'])
     # Emits data_response to display to client
     emit("response number", session['number'])
+
+# Route to next
+@socketio.on("done response")
+@login_required
+def done(data):
+    # Emits data_response to display to client
+    emit("response people", responden, broadcast=True)
+    emit("response totals", data_response, broadcast=True)
+
+# Route to next
+@socketio.on("reset response")
+@login_required
+def reset(data):
+    data_response.clear()
+    data_response.append({"A": 0, "B": 0, "C": 0, "D": 0, "E": 0})
+    responden.clear()
+    emit("response admin_people", responden, broadcast=True)
+    emit("response admin_totals", data_response, broadcast=True)
 
 #=============================================
 # LOGIN SETTUP 

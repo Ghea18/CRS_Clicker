@@ -1,4 +1,4 @@
-function showChart( text, number) {
+function showChart(text, number) {
     var canvas = document.getElementById('myChart');
     canvas.style.height = '400px';
     canvas.style.width = '800px';
@@ -7,8 +7,7 @@ function showChart( text, number) {
         type: 'bar',
         data: {
             labels: text,
-            datasets: [
-                {
+            datasets: [{
                     label: 'A',
                     data: number[0],
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -73,10 +72,8 @@ function showChart( text, number) {
 document.addEventListener('DOMContentLoaded', () => {
     // Connect to websocket
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
     // When connected, configure buttons
     socket.on('connect', () => {
-
         // Each button should emit a "submit response" event
         document.querySelectorAll('button').forEach(button => {
             button.onclick = () => {
@@ -100,13 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         //socket.emit('timer');
     });
-    socket.on('response number', data => {
-        console.log(data);
-        document.querySelector('#number').innerHTML = data;
-    });
-    // When a new response is announced, add to the unordered list
-    socket.on('response totals', data => {
-        let chart = [[],[],[],[],[]];
+    socket.on('response admin_totals', data => {
+        let chart = [
+            [],
+            [],
+            [],
+            [],
+            []
+        ];
         let label = [];
         for (var num in data) {
             console.log(data[num]);
@@ -115,18 +113,17 @@ document.addEventListener('DOMContentLoaded', () => {
             chart[2].push(data[num]['C']);
             chart[3].push(data[num]['D']);
             chart[4].push(data[num]['E']);
-            label.push(parseInt(num)+1);
+            label.push(parseInt(num) + 1);
         }
         showChart(label, chart);
     });
-    socket.on('response people', data => {
+    socket.on('response admin_people', data => {
         console.log(data);
         responden = '';
         for (let num = 0; num < data.length; num++) {
             const name = data[num];
-            responden += name+', '
+            responden += name + ', '
         }
         document.querySelector('#responden').innerHTML = responden;
     });
 });
-
