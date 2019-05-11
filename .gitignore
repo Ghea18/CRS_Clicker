@@ -1,0 +1,7 @@
+__pycache__/
+.sass-cache/
+flask_session/
+lib/
+bin/
+
+\.vscode/

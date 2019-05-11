@@ -1,1 +1,1 @@
-CRS_Cliker(git)
+CRS_Clicker
