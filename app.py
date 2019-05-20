@@ -62,6 +62,7 @@ def result():
 # Route for reset
 @app.route('/reset', methods=["POST", "GET"])
 def reset():
+    global data_response
     data_response.clear()
     data_response.append({"A": 0, "B": 0, "C": 0, "D": 0, "E": 0})
     responden.clear()
@@ -161,6 +162,8 @@ def done(data):
     # Emits data_response to display to client
     emit("response people", responden, broadcast=True)
     emit("response totals", data_response, broadcast=True)
+    emit("response admin_people", responden, broadcast=True)
+    emit("response admin_totals", data_response, broadcast=True)
 
 # Route to next
 @socketio.on("reset response")
