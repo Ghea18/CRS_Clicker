@@ -8,7 +8,7 @@ Click==7.0
 colorama==0.4.1
 cryptography==2.6.1
 dnspython==1.16.0
-eventlet==0.24.1
+eventlet==0.31.0
 Flask==1.0.2
 Flask-Hashing==1.1
 Flask-Login==0.4.1
